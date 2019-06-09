@@ -38,4 +38,6 @@ library(ggplot2)
 timevfluxexp <- ggplot(Friday31exp, aes(x=Time,y=Flux))+geom_point(shape=1)+ geom_smooth(method=lm)
 timevfluxexp
 
+#^THIS IS WHERE THE PROBLEM LIES 
+
 help(package = ggplot2, geom_smooth)
