@@ -34,5 +34,12 @@ colnames(expdata) <- colnames(expcolumns)
 
 library(ggplot2)
 
-expplot <- ggplot(expdata, aes(x=Time, y=Flux))+geom_point()+geom_smooth(method = lm)
+expplot <- ggplot(expdata, aes(x=Time, y=Flux))+geom_point()+geom_smooth(method = "lm", formula = y ~ x,)
 expplot
+
+
+
+install.packages("devtools")
+devtools::install_github("goodekat/ggResidpanel")
+
+
