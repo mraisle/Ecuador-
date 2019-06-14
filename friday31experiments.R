@@ -16,7 +16,10 @@ colnames(Friday31control) <- colnames(columns)
 
 library(ggplot2)
 
-timevfluxctrl <- ggplot(Friday31control)+geom_point(aes(x=Time,y=Flux))
+#convert time to time 
+Friday31control$Time <- as.POSIXct(as.character(Friday31control$Time), format = "%H:%M:%OS")
+
+timevfluxctrl <- ggplot(Friday31control,aes(x=Time,y=Flux))+geom_point()+geom_smooth(method ="lm")
 timevfluxctrl
 
 #yay it worked! It read time! Not sure why. make sure to ask. 
@@ -35,9 +38,13 @@ colnames(Friday31exp) <- colnames(columnsexp)
 
 library(ggplot2)
 
-timevfluxexp <- ggplot(Friday31exp, aes(x=Time,y=Flux))+geom_point(shape=1)+ geom_smooth(method=lm)
+Friday31exp$Time <- as.POSIXct(as.character(Friday31exp$Time), format = "%H:%M:%OS")
+
+timevfluxexp <- ggplot(Friday31exp,aes(x=Time,y=Flux))+
+  geom_point()+geom_smooth(method ="lm")
 timevfluxexp
 
-#^THIS IS WHERE THE PROBLEM LIES 
+install.packages('dplyr')
+library(dplyr)
+library(tidyr)
 
-help(package = ggplot2, geom_smooth)
