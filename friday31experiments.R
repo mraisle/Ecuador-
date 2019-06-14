@@ -41,3 +41,7 @@ plot(lm)
 # Pull the residuals from the regression
 resids <- resid(lm)
 resids
+
+# Hi Meg, am I doing this right?
+
+four <- 2+2
