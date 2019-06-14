@@ -1,50 +1,45 @@
-setwd('~/Desktop/eosrdata')
 library(ggplot2)
 
-#first we need to import just the column names and the data separetely 
+# Set Working Directory
+setwd('C:/Users/ARMur/OneDrive/Documents/Ecuador-/')
 
-columns <- read.csv('friday31cntrldata.csv', nrows = 1, sep = ',', header = TRUE)
+# The format of the .dat file is awkward so column names need to be imported
+# seperately from the data then remerged
 
-Friday31control <- read.csv('friday31cntrldata.csv',skip = 1, sep = ',', header = FALSE)
-
-#Now we assign column names to the data 
-
-colnames(Friday31control) <- colnames(columns)
-
-#ok, we're going to see if it has already read the time or not. 
-#let's try to plot time vs. flux 
-
-library(ggplot2)
-
-#convert time to time 
-Friday31control$Time <- as.POSIXct(as.character(Friday31control$Time), format = "%H:%M:%OS")
-
-timevfluxctrl <- ggplot(Friday31control,aes(x=Time,y=Flux))+geom_point()+geom_smooth(method ="lm")
-timevfluxctrl
-
-#yay it worked! It read time! Not sure why. make sure to ask. 
-#Let's now do the same thing for the experimental dataset. 
-
+# Import column names
 columnsexp <- read.csv('friday31expdata.csv', nrows = 1, sep = ',', header = TRUE)
 
+# Import data
 Friday31exp <- read.csv('friday31expdata.csv',skip = 1, sep = ',', header = FALSE)
 
-#Now we assign column names to the data 
-
+# Assign column names to the data 
 colnames(Friday31exp) <- colnames(columnsexp)
 
-#ok, we're going to see if it has already read the time or not. 
-#let's try to plot time vs. flux 
+# Convert time from factor to POSIXct
+Friday31exp$DateTime <- paste0("20",Friday31exp$Year,"-0",Friday31exp$Month,"-",Friday31exp$Day," ",Friday31exp$Time)
+Friday31exp$Time <- as.POSIXct(Friday31exp$DateTime, format = "%Y-%m-%d %H:%M:%OS")
 
-library(ggplot2)
+# Create numeric ID to run regressions (regressions can't be run on POSIXct)
+Friday31exp$row <- as.integer(rownames(Friday31exp))
 
-Friday31exp$Time <- as.POSIXct(as.character(Friday31exp$Time), format = "%H:%M:%OS")
+# Remove row 5 because of reading error (think the sensor was moved at this time)
+Friday31exp <- Friday31exp[-5,]
 
-timevfluxexp <- ggplot(Friday31exp,aes(x=Time,y=Flux))+
-  geom_point()+geom_smooth(method ="lm")
+# Plot time vs. flux
+timevfluxexp <- ggplot(Friday31exp, aes(x=Time,y=Flux))+
+  geom_point(shape=1)+
+  geom_smooth( method = 'lm', se = FALSE)
 timevfluxexp
 
-install.packages('dplyr')
-library(dplyr)
-library(tidyr)
+# Run a linear regression of row number vs flux (row number is a substitue for time)
+lm <- lm(Flux~row, data = Friday31exp)
+summary(lm)
+
+# Plot the regression
+plot(lm)
+
+# Pull the residuals from the regression
+resids <- resid(lm)
+resids
+
 
