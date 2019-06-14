@@ -42,4 +42,10 @@ plot(lm)
 resids <- resid(lm)
 resids
 
+ residuals_fix
+# Hi Meg, am I doing this right?
 
+four <- 2+2
+
+
+ master
