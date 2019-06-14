@@ -14,8 +14,6 @@ colnames(Friday31control) <- colnames(columns)
 #ok, we're going to see if it has already read the time or not. 
 #let's try to plot time vs. flux 
 
-library(ggplot2)
-
 timevfluxctrl <- ggplot(Friday31control)+geom_point(aes(x=Time,y=Flux))
 timevfluxctrl
 
@@ -30,14 +28,22 @@ Friday31exp <- read.csv('friday31expdata.csv',skip = 1, sep = ',', header = FALS
 
 colnames(Friday31exp) <- colnames(columnsexp)
 
+# Convert time from factor to posixCT
+Friday31exp$DateTime <- paste0("20",Friday31exp$Year,"-0",Friday31exp$Month,"-",Friday31exp$Day," ",Friday31exp$Time)
+Friday31exp$Time <- as.POSIXct(Friday31exp$DateTime, format = "%Y-%m-%d %H:%M:%OS")
+
 #ok, we're going to see if it has already read the time or not. 
 #let's try to plot time vs. flux 
 
-library(ggplot2)
-
-timevfluxexp <- ggplot(Friday31exp, aes(x=Time,y=Flux))+geom_point(shape=1)+ geom_smooth(method=lm)
+timevfluxexp <- ggplot(Friday31exp, aes(x=Time,y=Flux))+
+  geom_point(shape=1)+
+  geom_smooth(method = lm, se = FALSE)
 timevfluxexp
 
-#^THIS IS WHERE THE PROBLEM LIES 
+# Run a linear regression
+# For this regression time cannot be enteret correctly into the model, so we use 'rownames()'
+# which will just give us the number of the row (1,2,3 etc...)
 
-help(package = ggplot2, geom_smooth)
+lm <- lm(rownames(Friday31exp)~Flux, data = Friday31exp)
+summary(lm)
+
